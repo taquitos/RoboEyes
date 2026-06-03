@@ -2,6 +2,20 @@
 
 Reusable ESP-IDF eyes animation framework.
 
+## Emotion Gallery
+
+| Neutral | Happiness | Curiosity |
+| --- | --- | --- |
+| <img src="docs/emotions/neutral.gif" width="180" alt="Neutral"> | <img src="docs/emotions/happiness.gif" width="180" alt="Happiness"> | <img src="docs/emotions/curiosity.gif" width="180" alt="Curiosity"> |
+
+| Exhaustion | Falling Asleep | Waking Up |
+| --- | --- | --- |
+| <img src="docs/emotions/exhaustion.gif" width="180" alt="Exhaustion"> | <img src="docs/emotions/falling_asleep.gif" width="180" alt="Falling Asleep"> | <img src="docs/emotions/waking_up.gif" width="180" alt="Waking Up"> |
+
+| Snoring | Dizzy | Playful Pong |
+| --- | --- | --- |
+| <img src="docs/emotions/snoring.gif" width="180" alt="Snoring"> | <img src="docs/emotions/dizzy.gif" width="180" alt="Dizzy"> | <img src="docs/emotions/playful_pong.gif" width="180" alt="Playful Pong"> |
+
 ## Components
 
 - `eyes`: platform-light core animation, renderer, sequencer, GIF helpers.
