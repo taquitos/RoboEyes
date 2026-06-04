@@ -42,6 +42,13 @@ set(ROBOEYES_COMPONENTS eyes eyes_emotion_cycle eyes_log_sink)
 include("${CMAKE_CURRENT_LIST_DIR}/frameworks/RoboEyes/roboeyes.cmake")
 ```
 
+Apps can also use presets:
+
+```cmake
+set(ROBOEYES_PRESET headless) # core, headless, or st7789
+include("${CMAKE_CURRENT_LIST_DIR}/frameworks/RoboEyes/roboeyes.cmake")
+```
+
 Apps that need ST7789 output need `eyes`, `eyes_lcd_sink`, `lcd_st7789`, and
 `pixel_convert`.
 

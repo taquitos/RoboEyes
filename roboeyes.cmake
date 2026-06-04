@@ -9,6 +9,22 @@ set(ROBOEYES_AVAILABLE_COMPONENTS
   pixel_convert
 )
 
+if(DEFINED ROBOEYES_PRESET AND DEFINED ROBOEYES_COMPONENTS)
+  message(FATAL_ERROR "Set ROBOEYES_PRESET or ROBOEYES_COMPONENTS, not both")
+endif()
+
+if(DEFINED ROBOEYES_PRESET)
+  if(ROBOEYES_PRESET STREQUAL "core")
+    set(ROBOEYES_COMPONENTS eyes)
+  elseif(ROBOEYES_PRESET STREQUAL "headless")
+    set(ROBOEYES_COMPONENTS eyes eyes_emotion_cycle eyes_log_sink)
+  elseif(ROBOEYES_PRESET STREQUAL "st7789")
+    set(ROBOEYES_COMPONENTS eyes eyes_emotion_cycle eyes_lcd_sink lcd_st7789 pixel_convert)
+  else()
+    message(FATAL_ERROR "Unknown RoboEyes preset: ${ROBOEYES_PRESET}")
+  endif()
+endif()
+
 if(NOT DEFINED ROBOEYES_COMPONENTS)
   set(ROBOEYES_COMPONENTS ${ROBOEYES_AVAILABLE_COMPONENTS})
 endif()
