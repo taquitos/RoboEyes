@@ -20,6 +20,44 @@ static void set_backlight(gpio_num_t gpio, bool active_high, bool on) {
 
 } // namespace
 
+St7789Config supermini_c3_st7789_config_240x240() {
+  St7789Config cfg;
+  cfg.spi_host = SPI2_HOST;
+  cfg.sclk_gpio = GPIO_NUM_6;
+  cfg.mosi_gpio = GPIO_NUM_7;
+  cfg.cs_gpio = GPIO_NUM_10;
+  cfg.dc_gpio = GPIO_NUM_4;
+  cfg.rst_gpio = GPIO_NUM_3;
+  cfg.backlight_gpio = GPIO_NUM_5;
+  cfg.backlight_active_high = true;
+  cfg.width = 240;
+  cfg.height = 240;
+  cfg.gap_x = 0;
+  cfg.gap_y = 0;
+  cfg.invert_color = true;
+  return cfg;
+}
+
+St7789Config tinys3_st7789v3_config_240x280() {
+  St7789Config cfg;
+  cfg.spi_host = SPI2_HOST;
+  cfg.sclk_gpio = GPIO_NUM_36;
+  cfg.mosi_gpio = GPIO_NUM_35;
+  cfg.cs_gpio = GPIO_NUM_34;
+  cfg.dc_gpio = GPIO_NUM_7;
+  cfg.rst_gpio = GPIO_NUM_6;
+  cfg.backlight_gpio = GPIO_NUM_21;
+  cfg.backlight_active_high = true;
+  cfg.width = 240;
+  cfg.height = 280;
+  cfg.gap_x = 20;
+  cfg.gap_y = 0;
+  cfg.swap_xy = true;
+  cfg.mirror_y = true;
+  cfg.invert_color = true;
+  return cfg;
+}
+
 St7789Display::~St7789Display() {
   // Best-effort cleanup. This typically isn't called in firmware, but helps tests/tools.
   if (backlight_gpio_ != GPIO_NUM_NC) {

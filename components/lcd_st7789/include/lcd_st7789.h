@@ -40,6 +40,9 @@ struct St7789Config {
   bool invert_color = true;
 };
 
+St7789Config supermini_c3_st7789_config_240x240();
+St7789Config tinys3_st7789v3_config_240x280();
+
 class St7789Display {
 public:
   St7789Display() = default;
@@ -76,4 +79,3 @@ private:
 } // namespace lcd
 
 #endif
-

@@ -22,7 +22,7 @@ Reusable ESP-IDF eyes animation framework.
 - `eyes_emotion_cycle`: ready-made emotion cycle runner for firmware demos.
 - `eyes_log_sink`: log-based frame sink for headless firmware smoke tests.
 - `eyes_lcd_sink`: frame sink that sends rendered grayscale frames to LCD.
-- `lcd_st7789`: ST7789 SPI display wrapper.
+- `lcd_st7789`: ST7789 SPI display wrapper and board config presets.
 - `pixel_convert`: grayscale-to-RGB565 conversion helper.
 
 ## Use In ESP-IDF Project
