@@ -34,9 +34,16 @@ Copy or submodule this `RoboEyes` directory, then include its helper before
 include("${CMAKE_CURRENT_LIST_DIR}/frameworks/RoboEyes/roboeyes.cmake")
 ```
 
-Apps that only need the renderer can copy selected entries from
-`roboeyes.cmake` and include just `eyes`. Apps that need ST7789 output need
-`eyes`, `eyes_lcd_sink`, `lcd_st7789`, and `pixel_convert`.
+The helper includes all RoboEyes components by default. Apps can include only
+selected components by setting `ROBOEYES_COMPONENTS` before the helper:
+
+```cmake
+set(ROBOEYES_COMPONENTS eyes eyes_emotion_cycle eyes_log_sink)
+include("${CMAKE_CURRENT_LIST_DIR}/frameworks/RoboEyes/roboeyes.cmake")
+```
+
+Apps that need ST7789 output need `eyes`, `eyes_lcd_sink`, `lcd_st7789`, and
+`pixel_convert`.
 
 ## Firmware Wiring
 
