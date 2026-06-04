@@ -10,6 +10,10 @@ namespace {
 
 static const char *TAG = "lcd_st7789";
 
+constexpr gpio_num_t gpio(int value) {
+  return static_cast<gpio_num_t>(value);
+}
+
 static void set_backlight(gpio_num_t gpio, bool active_high, bool on) {
   if (gpio == GPIO_NUM_NC) {
     return;
@@ -41,9 +45,9 @@ St7789Config supermini_c3_st7789_config_240x240() {
 St7789Config tinys3_st7789v3_config_240x280() {
   St7789Config cfg;
   cfg.spi_host = SPI2_HOST;
-  cfg.sclk_gpio = GPIO_NUM_36;
-  cfg.mosi_gpio = GPIO_NUM_35;
-  cfg.cs_gpio = GPIO_NUM_34;
+  cfg.sclk_gpio = gpio(36);
+  cfg.mosi_gpio = gpio(35);
+  cfg.cs_gpio = gpio(34);
   cfg.dc_gpio = GPIO_NUM_7;
   cfg.rst_gpio = GPIO_NUM_6;
   cfg.backlight_gpio = GPIO_NUM_21;
