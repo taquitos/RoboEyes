@@ -93,6 +93,8 @@ build-host-roboeyes_gif_runner/eyes_gif_runner --out out/eyes_gifs --emotion all
 ## Examples
 
 - `examples/espidf_headless`: ESP-IDF smoke test with log output and no display wiring.
+- `examples/espidf_st7789_supermini_c3`: ESP32-C3 Super Mini ST7789 demo with
+  safe GPIO wiring.
 
 ## Tests
 
