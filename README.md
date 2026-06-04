@@ -116,6 +116,12 @@ scripts/new_project.sh ../RoboEyesDisplay st7789-supermini-c3
 scripts/new_project.sh ../RoboEyesTinyS3 st7789-tinys3
 ```
 
+Build all examples:
+
+```bash
+scripts/build_examples.sh
+```
+
 ## Tests
 
 - Component tests live beside framework components.
