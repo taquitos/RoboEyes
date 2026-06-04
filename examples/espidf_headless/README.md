@@ -14,3 +14,11 @@ idf.py -p /dev/cu.usbmodem314101 flash monitor
 
 Press `Ctrl+]` to exit monitor.
 
+## PlatformIO
+
+```bash
+pio run -e esp32c3
+pio run -e esp32c3 -t upload --upload-port /dev/cu.usbmodem314101
+pio device monitor -p /dev/cu.usbmodem314101 -b 115200
+```
+
