@@ -1,0 +1,5 @@
+version: "0.1.0"
+description: "Pixel conversion helpers for RoboEyes sinks."
+license: "MIT"
+dependencies:
+  idf: ">=5.0"

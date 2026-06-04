@@ -1,0 +1,5 @@
+version: "0.1.0"
+description: "Ready-made RoboEyes emotion cycle runner."
+license: "MIT"
+dependencies:
+  idf: ">=5.0"

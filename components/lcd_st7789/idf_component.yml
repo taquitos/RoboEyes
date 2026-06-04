@@ -1,0 +1,5 @@
+version: "0.1.0"
+description: "ST7789 SPI display wrapper and board presets."
+license: "MIT"
+dependencies:
+  idf: ">=5.0"

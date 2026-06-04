@@ -1,0 +1,5 @@
+version: "0.1.0"
+description: "Core RoboEyes animation and rendering primitives."
+license: "MIT"
+dependencies:
+  idf: ">=5.0"

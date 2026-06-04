@@ -1,0 +1,5 @@
+version: "0.1.0"
+description: "RoboEyes frame sink that samples rendered frames to ESP-IDF logs."
+license: "MIT"
+dependencies:
+  idf: ">=5.0"

@@ -1,0 +1,5 @@
+version: "0.1.0"
+description: "RoboEyes frame sink that accepts frames without output."
+license: "MIT"
+dependencies:
+  idf: ">=5.0"
