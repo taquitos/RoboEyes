@@ -90,6 +90,10 @@ cmake --build build-host-roboeyes_gif_runner --parallel 4
 build-host-roboeyes_gif_runner/eyes_gif_runner --out out/eyes_gifs --emotion all
 ```
 
+## Examples
+
+- `examples/espidf_headless`: ESP-IDF smoke test with log output and no display wiring.
+
 ## Tests
 
 - Component tests live beside framework components.
