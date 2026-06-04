@@ -4,6 +4,7 @@ set(ROBOEYES_AVAILABLE_COMPONENTS
   eyes
   eyes_emotion_cycle
   eyes_log_sink
+  eyes_null_sink
   eyes_lcd_sink
   lcd_st7789
   pixel_convert
@@ -18,6 +19,8 @@ if(DEFINED ROBOEYES_PRESET)
     set(ROBOEYES_COMPONENTS eyes)
   elseif(ROBOEYES_PRESET STREQUAL "headless")
     set(ROBOEYES_COMPONENTS eyes eyes_emotion_cycle eyes_log_sink)
+  elseif(ROBOEYES_PRESET STREQUAL "null")
+    set(ROBOEYES_COMPONENTS eyes eyes_emotion_cycle eyes_null_sink)
   elseif(ROBOEYES_PRESET STREQUAL "st7789")
     set(ROBOEYES_COMPONENTS eyes eyes_emotion_cycle eyes_lcd_sink lcd_st7789 pixel_convert)
   else()

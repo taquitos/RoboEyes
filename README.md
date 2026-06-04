@@ -21,6 +21,7 @@ Reusable ESP-IDF eyes animation framework.
 - `eyes`: platform-light core animation, renderer, sequencer, GIF helpers.
 - `eyes_emotion_cycle`: ready-made emotion cycle runner for firmware demos.
 - `eyes_log_sink`: log-based frame sink for headless firmware smoke tests.
+- `eyes_null_sink`: silent frame sink for performance and integration smoke tests.
 - `eyes_lcd_sink`: frame sink that sends rendered grayscale frames to LCD.
 - `lcd_st7789`: ST7789 SPI display wrapper and board config presets.
 - `pixel_convert`: grayscale-to-RGB565 conversion helper.
@@ -45,7 +46,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/frameworks/RoboEyes/roboeyes.cmake")
 Apps can also use presets:
 
 ```cmake
-set(ROBOEYES_PRESET headless) # core, headless, or st7789
+set(ROBOEYES_PRESET headless) # core, headless, null, or st7789
 include("${CMAKE_CURRENT_LIST_DIR}/frameworks/RoboEyes/roboeyes.cmake")
 ```
 
