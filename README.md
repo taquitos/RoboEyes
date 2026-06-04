@@ -108,6 +108,14 @@ See `examples/README.md` for board wiring and build commands.
 - `examples/espidf_st7789_tinys3`: TinyS3 ST7789V3 240x280 demo with 90 degree
   rotation.
 
+Create a downstream starter project:
+
+```bash
+scripts/new_project.sh ../RoboEyesApp headless
+scripts/new_project.sh ../RoboEyesDisplay st7789-supermini-c3
+scripts/new_project.sh ../RoboEyesTinyS3 st7789-tinys3
+```
+
 ## Tests
 
 - Component tests live beside framework components.
