@@ -53,6 +53,9 @@ public:
   // Draws a full-frame RGB565 buffer of size `width` x `height`.
   esp_err_t draw_full_rgb565(const uint16_t *rgb565, int width, int height);
 
+  // Draws an RGB565 buffer into a rectangular area.
+  esp_err_t draw_rgb565_area(const uint16_t *rgb565, int x, int y, int width, int height);
+
   // Wait for any queued color transfers to finish. This makes it safe to reuse DMA buffers.
   esp_err_t flush();
 
@@ -71,6 +74,7 @@ private:
 
   gpio_num_t backlight_gpio_ = GPIO_NUM_NC;
   bool backlight_active_high_ = true;
+  bool backlight_pwm_initialized_ = false;
 
   int width_ = 0;
   int height_ = 0;

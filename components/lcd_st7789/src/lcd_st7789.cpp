@@ -1,5 +1,6 @@
 #include "lcd_st7789.h"
 
+#include "driver/ledc.h"
 #include "esp_check.h"
 #include "esp_lcd_panel_st7789.h"
 #include "esp_log.h"
@@ -9,17 +10,59 @@ namespace lcd {
 namespace {
 
 static const char *TAG = "lcd_st7789";
+constexpr ledc_mode_t kBacklightLedcMode = LEDC_LOW_SPEED_MODE;
+constexpr ledc_timer_t kBacklightLedcTimer = LEDC_TIMER_0;
+constexpr ledc_channel_t kBacklightLedcChannel = LEDC_CHANNEL_0;
+constexpr ledc_timer_bit_t kBacklightLedcDutyResolution = LEDC_TIMER_10_BIT;
+constexpr uint32_t kBacklightLedcFrequencyHz = 5000;
+constexpr uint32_t kBacklightLedcMaxDuty = (1U << 10) - 1U;
+constexpr uint32_t kBacklightLedcDuty80Percent = (kBacklightLedcMaxDuty * 80U) / 100U;
 
 constexpr gpio_num_t gpio(int value) {
   return static_cast<gpio_num_t>(value);
 }
 
-static void set_backlight(gpio_num_t gpio, bool active_high, bool on) {
+static esp_err_t configure_backlight_pwm(gpio_num_t gpio, bool active_high) {
+  if (gpio == GPIO_NUM_NC) {
+    return ESP_OK;
+  }
+
+  ledc_timer_config_t timer_cfg = {};
+  timer_cfg.speed_mode = kBacklightLedcMode;
+  timer_cfg.duty_resolution = kBacklightLedcDutyResolution;
+  timer_cfg.timer_num = kBacklightLedcTimer;
+  timer_cfg.freq_hz = kBacklightLedcFrequencyHz;
+  timer_cfg.clk_cfg = LEDC_AUTO_CLK;
+  ESP_RETURN_ON_ERROR(ledc_timer_config(&timer_cfg), TAG, "backlight ledc timer failed");
+
+  ledc_channel_config_t channel_cfg = {};
+  channel_cfg.gpio_num = gpio;
+  channel_cfg.speed_mode = kBacklightLedcMode;
+  channel_cfg.channel = kBacklightLedcChannel;
+  channel_cfg.intr_type = LEDC_INTR_DISABLE;
+  channel_cfg.timer_sel = kBacklightLedcTimer;
+  channel_cfg.duty = 0;
+  channel_cfg.hpoint = 0;
+  channel_cfg.flags.output_invert = !active_high;
+  return ledc_channel_config(&channel_cfg);
+}
+
+static esp_err_t set_backlight_pwm(uint32_t duty) {
+  ESP_RETURN_ON_ERROR(ledc_set_duty(kBacklightLedcMode, kBacklightLedcChannel, duty), TAG,
+                      "backlight ledc set duty failed");
+  return ledc_update_duty(kBacklightLedcMode, kBacklightLedcChannel);
+}
+
+static void stop_backlight_pwm(bool active_high) {
+  uint32_t idle_level = active_high ? 0U : 1U;
+  (void)ledc_stop(kBacklightLedcMode, kBacklightLedcChannel, idle_level);
+}
+
+static void reset_backlight_gpio(gpio_num_t gpio) {
   if (gpio == GPIO_NUM_NC) {
     return;
   }
-  int level = (on == active_high) ? 1 : 0;
-  gpio_set_level(gpio, level);
+  gpio_reset_pin(gpio);
 }
 
 } // namespace
@@ -65,8 +108,11 @@ St7789Config tinys3_st7789v3_config_240x280() {
 St7789Display::~St7789Display() {
   // Best-effort cleanup. This typically isn't called in firmware, but helps tests/tools.
   if (backlight_gpio_ != GPIO_NUM_NC) {
-    set_backlight(backlight_gpio_, backlight_active_high_, false);
-    gpio_reset_pin(backlight_gpio_);
+    if (backlight_pwm_initialized_) {
+      stop_backlight_pwm(backlight_active_high_);
+      backlight_pwm_initialized_ = false;
+    }
+    reset_backlight_gpio(backlight_gpio_);
   }
   if (panel_) {
     (void)esp_lcd_panel_del(panel_);
@@ -98,14 +144,9 @@ esp_err_t St7789Display::init(const St7789Config &cfg) {
   backlight_gpio_ = cfg.backlight_gpio;
   backlight_active_high_ = cfg.backlight_active_high;
   if (backlight_gpio_ != GPIO_NUM_NC) {
-    gpio_config_t bk_cfg = {};
-    bk_cfg.pin_bit_mask = 1ULL << backlight_gpio_;
-    bk_cfg.mode = GPIO_MODE_OUTPUT;
-    bk_cfg.pull_up_en = GPIO_PULLUP_DISABLE;
-    bk_cfg.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    bk_cfg.intr_type = GPIO_INTR_DISABLE;
-    ESP_RETURN_ON_ERROR(gpio_config(&bk_cfg), TAG, "backlight gpio config failed");
-    set_backlight(backlight_gpio_, backlight_active_high_, false);
+    ESP_RETURN_ON_ERROR(configure_backlight_pwm(backlight_gpio_, backlight_active_high_), TAG,
+                        "backlight pwm config failed");
+    backlight_pwm_initialized_ = true;
   }
 
   ESP_LOGI(TAG, "Init SPI bus (host=%d, sclk=%d, mosi=%d, cs=%d, dc=%d, rst=%d)", (int)cfg.spi_host,
@@ -151,23 +192,32 @@ esp_err_t St7789Display::init(const St7789Config &cfg) {
   ESP_RETURN_ON_ERROR(esp_lcd_panel_swap_xy(panel_, cfg.swap_xy), TAG, "swap_xy failed");
   ESP_RETURN_ON_ERROR(esp_lcd_panel_mirror(panel_, cfg.mirror_x, cfg.mirror_y), TAG, "mirror failed");
 
-  set_backlight(backlight_gpio_, backlight_active_high_, true);
+  if (backlight_pwm_initialized_) {
+    ESP_RETURN_ON_ERROR(set_backlight_pwm(kBacklightLedcDuty80Percent), TAG,
+                        "backlight pwm duty failed");
+  }
 
-  ESP_LOGI(TAG, "ST7789 ready (%dx%d gap=%d,%d swap_xy=%d mirror=%d,%d invert=%d)", cfg.width,
-           cfg.height, cfg.gap_x, cfg.gap_y, (int)cfg.swap_xy, (int)cfg.mirror_x, (int)cfg.mirror_y,
-           (int)cfg.invert_color);
+  ESP_LOGI(TAG, "ST7789 ready (%dx%d gap=%d,%d swap_xy=%d mirror=%d,%d invert=%d backlight=%u%%)",
+           cfg.width, cfg.height, cfg.gap_x, cfg.gap_y, (int)cfg.swap_xy, (int)cfg.mirror_x,
+           (int)cfg.mirror_y, (int)cfg.invert_color, 80U);
   return ESP_OK;
 }
 
 esp_err_t St7789Display::draw_full_rgb565(const uint16_t *rgb565, int width, int height) {
+  return draw_rgb565_area(rgb565, 0, 0, width, height);
+}
+
+esp_err_t St7789Display::draw_rgb565_area(const uint16_t *rgb565, int x, int y, int width,
+                                          int height) {
   if (!panel_ || !rgb565) {
     return ESP_ERR_INVALID_STATE;
   }
-  if (width != width_ || height != height_) {
+  if (x < 0 || y < 0 || width <= 0 || height <= 0 || x + width > width_ ||
+      y + height > height_) {
     return ESP_ERR_INVALID_ARG;
   }
 
-  return esp_lcd_panel_draw_bitmap(panel_, 0, 0, width, height, rgb565);
+  return esp_lcd_panel_draw_bitmap(panel_, x, y, x + width, y + height, rgb565);
 }
 
 esp_err_t St7789Display::flush() {
